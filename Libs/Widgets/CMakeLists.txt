@@ -135,6 +135,10 @@ IF(CTK_WRAP_PYTHONQT_LIGHT)
     )
 ENDIF()
 
+IF(CTK_USE_QTTESTING)
+  #LIST(APPEND ... recorders and players)
+ENDIF()
+
 # Headers that should run through moc
 SET(KIT_MOC_SRCS
   ctkWorkflowAbstractPagedWidget.h

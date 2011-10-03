@@ -116,6 +116,7 @@ FIND_PACKAGE(Doxygen QUIET)
 # ExternalProjects - Project should be topologically ordered
 #
 SET(external_projects
+  QtTesting
   CTKData
   Log4Qt
   KWStyle
@@ -165,6 +166,7 @@ ExternalProject_Add(${proj}
     # Mandatory dependencies
     ${Log4Qt_DEPENDS}
     # Optionnal dependencies
+    ${QtTesting_DEPENDS} 
     ${CTKData_DEPENDS}
     ${QtMobility_DEPENDS}
     ${QtSOAP_DEPENDS}
@@ -175,7 +177,7 @@ ExternalProject_Add(${proj}
     ${ZMQ_DEPENDS}
     ${OpenIGTLink_DEPENDS}
     ${VTK_DEPENDS}
-    ${XIP_DEPENDS}    
+    ${XIP_DEPENDS}
 )
 
 #-----------------------------------------------------------------------------

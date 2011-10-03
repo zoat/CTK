@@ -206,6 +206,9 @@ IF(BUILD_TESTING)
       ")
 ENDIF()
 
+
+OPTION(CTK_USE_QTTESTING "Use Qt based GUI testing framework" OFF)
+
 #-----------------------------------------------------------------------------
 # Coverage
 #
@@ -569,6 +572,10 @@ FOREACH(_external_target ${EXTERNAL_TARGETS})
     ENDIF()
   ENDIF()
 ENDFOREACH()
+
+IF(CTK_USE_QTTESTING)
+  FIND_PACKAGE(QtTesting REQUIRED)
+ENDIF()
 
 # Since PYTHONQT_USE_VTK library option can be enabled independently of
 # Visualization/VTK/Core, let's make sure VTK has been properly discovered

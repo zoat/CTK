@@ -26,7 +26,7 @@
 MACRO(ctkMacroBuildLib)
   ctkMacroParseArguments(MY
     "NAME;EXPORT_DIRECTIVE;SRCS;MOC_SRCS;UI_FORMS;INCLUDE_DIRECTORIES;TARGET_LIBRARIES;RESOURCES;LIBRARY_TYPE"
-    "DISABLE_WRAP_PYTHONQT"
+    "DISABLE_WRAP_PYTHONQT;ENABLE_QTTESTING"
     ${ARGN}
     )
 
@@ -60,6 +60,11 @@ MACRO(ctkMacroBuildLib)
 
   # Add the include directories from the library dependencies
   ctkFunctionGetIncludeDirs(my_includes ${lib_name})
+
+  IF(CTK_USE_QTTESTING)
+    #append .. qt testing include to my_includes
+    #LIST(APPEND my_includes ${CMAKE_CURRENT_BINARY_DIR})
+  ENDIF()
 
   INCLUDE_DIRECTORIES(
     ${my_includes}
