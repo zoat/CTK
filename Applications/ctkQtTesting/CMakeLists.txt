@@ -18,6 +18,7 @@ set(KIT_SRCS
   ctkQtTestingMain.cpp
   ctkQtTestingMainWindow.cpp
   ctkQtTestingMainWindow.h
+
 )
 
 # Headers that should run through moc
