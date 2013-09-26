@@ -1,20 +1,19 @@
 // QT includes
-#include <QDebug>
 #include <QFileDialog>
+#include <QKeySequence>
 #include <QMainWindow>
+#include <QShortcut>
+#include <QString>
 #include <QTextStream>
 #include <QXmlStreamAttributes>
 #include <QXmlStreamReader>
 #include <QXmlStreamWriter>
-#include <QString>
-#include <QShortcut>
-#include <QKeySequence>
 
 // QtTesting includes
-#include "pqTestUtility.h"
 #include "pqEventObserver.h"
 #include "pqEventSource.h"
 #include "pqRecordEventsDialog.h"
+#include "pqTestUtility.h"
 
 // VTK includes
 #include <vtkActor.h>
@@ -26,7 +25,6 @@
 #include <vtkRenderer.h>
 #include <vtkSmartPointer.h>
 #include <vtkSphereSource.h>
-
 #include <vtkRenderWindow.h>
 #include <vtkRenderWindowInteractor.h>
 #include <vtkSplineWidget2.h>
@@ -34,9 +32,9 @@
 
 // CTK includes
 #include "ctkQtTestingMainWindow.h"
+#include "ctkQtTestingUtility.h"
 #include "ctkXMLEventObserver.h"
 #include "ctkXMLEventSource.h"
-#include "ctkQtTestingUtility.h"
 
 
 
@@ -53,11 +51,11 @@ ctkQtTestingMainWindow::ctkQtTestingMainWindow()
   
    
   QShortcut *shortcuts = new QShortcut(QKeySequence("Ctrl+6"), this);
-  QObject::connect(shortcuts, SIGNAL(activated()), this, SLOT(popp_record()));
+  QObject::connect(shortcuts, SIGNAL(activated()), this, SLOT(pop_record()));
   
   
   QShortcut *shortcut = new QShortcut(QKeySequence("Ctrl+4"), this);
-  QObject::connect(shortcut, SIGNAL(activated()), this, SLOT(popp_play()));
+  QObject::connect(shortcut, SIGNAL(activated()), this, SLOT(pop_play()));
   
   QShortcut *shortcutss = new QShortcut(QKeySequence("Ctrl+5"), this);
   
@@ -91,35 +89,30 @@ ctkQtTestingMainWindow::ctkQtTestingMainWindow()
   Ui.renderView->resetCamera();
 }
 
-
-
-
 //-----------------------------------------------------------------------------
 ctkQtTestingMainWindow::~ctkQtTestingMainWindow()
 {
   if(TestUtility)
     {
-    delete this->TestUtility;
+      delete this->TestUtility;
     }
-    if(Recorder)
+  if(Recorder)
     {
-    delete this->Recorder;
+      delete this->Recorder;
     }
-  
 }
 
 //-----------------------------------------------------------------------------
-void ctkQtTestingMainWindow::popp_record()
+void ctkQtTestingMainWindow::pop_record()
 {
-  qDebug() << "Start Popp";
   this->TestUtility->recordTestsBySuffix(QString("xml"));
 }
-//----------------------------------------------------------------------------
-void ctkQtTestingMainWindow::popp_play()
-{
-   this->TestUtility->openPlayerDialog();
-}
 
+//----------------------------------------------------------------------------
+void ctkQtTestingMainWindow::pop_play()
+{
+  this->TestUtility->openPlayerDialog();
+}
 
 //----------------------------------------------------------------------------
 void ctkQtTestingMainWindow::record(bool start)
@@ -130,63 +123,40 @@ void ctkQtTestingMainWindow::record(bool start)
                                                      QString(), "XML Files (*.xml)");
     if (!filename.isEmpty())
       {
-      qDebug() << "Start recording";
       QFileInfo fileInfo(filename);
       if (fileInfo.suffix() != "xml")
         {
-        filename += ".xml";
+          filename += ".xml";
         }
-      this->TestUtility->recordTests(filename);
+        this->TestUtility->recordTests(filename);
       }
     }
   else
     {
-    qDebug() << "Stop recording";
-    this->TestUtility->stopRecords(1);
+      this->TestUtility->stopRecords(1);
     }
 }
 
 //-----------------------------------------------------------------------------
-
-
-
 void ctkQtTestingMainWindow::play()
 {
-  qDebug() << "Start Playback";
+  qDebug() << "Start Playback"; 
   QString filename = QFileDialog::getOpenFileName (this, "Test File Name",
     QString(), "XML Files (*.xml)");
   if (!filename.isEmpty())
     {
-    this->TestUtility->playTests(filename);
+      this->TestUtility->playTests(filename);
     }
-  qDebug() << "End Playback";
+  qDebug() << "End Playback"; 
 }
 
 void ctkQtTestingMainWindow::pause_playback(bool start1)
 {
-  qDebug() << "Start Pause playback";
-  if (start1)
-    {
-    this->TestUtility->dispatcher()->run(false);
-    }
-  else
-    {
-    qDebug()<<"Stop Pause playback";
-    this->TestUtility->dispatcher()->run(true);
-    }
+  this->TestUtility->dispatcher()->run(!start1);
 }
 
 
 void ctkQtTestingMainWindow::pause_record(bool start2)
 {
-  qDebug()<<"Start Pause record";
-  if (start2)
-    {
-    this->TestUtility->recorder()->pause(false);
-    }
-  else
-    {
-    qDebug()<<"Stop Pause record";
-    this->TestUtility->recorder()->pause(true);
-    }
+  this->TestUtility->recorder()->pause(!start2);  
 }

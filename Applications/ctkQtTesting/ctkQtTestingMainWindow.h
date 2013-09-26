@@ -20,9 +20,9 @@ protected slots:
   ///Calling this function to pause the record.
   void pause_record(bool start2);
   ///Calling this function to add the record dialog box.
-  void popp_record();
+  void pop_record();
   ///Calling this function to add the playback dialog box.
-  void popp_play();
+  void pop_play();
 private:
   Q_DISABLE_COPY(ctkQtTestingMainWindow)
   ctkQtTestingUtility *TestUtility;
