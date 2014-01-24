@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>855</width>
+    <width>794</width>
     <height>595</height>
    </rect>
   </property>
@@ -35,7 +35,7 @@
           <blue>51</blue>
          </color>
         </property>
-        <property name="backgroundColor2">
+        <property name="backgroundColor2" stdset="0">
          <color>
           <red>51</red>
           <green>51</green>
@@ -87,21 +87,11 @@
        <widget class="ctkFontButton" name="FontButton"/>
       </item>
       <item>
-       <widget class="QPushButton" name="RecordButton">
-        <property name="text">
-         <string>Record</string>
-        </property>
-        <property name="checkable">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-      <item>
        <spacer name="verticalSpacer">
         <property name="orientation">
          <enum>Qt::Vertical</enum>
         </property>
-        <property name="sizeHint">
+        <property name="sizeHint" stdset="0">
          <size>
           <width>20</width>
           <height>40</height>
@@ -110,16 +100,9 @@
        </spacer>
       </item>
       <item>
-       <widget class="QRadioButton" name="RadioButton">
+       <widget class="QPushButton" name="RecordButton">
         <property name="text">
-         <string>Pause playback</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="PauseButton">
-        <property name="text">
-         <string>Pause record</string>
+         <string>Record</string>
         </property>
         <property name="checkable">
          <bool>true</bool>
@@ -131,15 +114,9 @@
         <property name="text">
          <string>PlayBack</string>
         </property>
-        <property name="checkable">
-         <bool>true</bool>
-        </property>
        </widget>
       </item>
      </layout>
-    </item>
-    <item>
-     <layout class="QVBoxLayout" name="verticalLayout_3"/>
     </item>
    </layout>
   </widget>
@@ -148,8 +125,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>855</width>
-     <height>25</height>
+     <width>794</width>
+     <height>23</height>
     </rect>
    </property>
   </widget>

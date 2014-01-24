@@ -4,7 +4,8 @@
 #include <QMainWindow>
 #include <ctkQtTestingUtility.h>
 #include "ui_ctkQtTestingMainWindow.h"
-class pqTestUtility;
+
+//class pqTestUtility;
 
 class ctkQtTestingMainWindow : public QMainWindow
 {
@@ -15,21 +16,13 @@ public:
 protected slots:
   void record(bool start);
   void play();
-  ///Calling this fuction to pause the  playback.
-  void pause_playback(bool start1);
-  ///Calling this function to pause the record.
-  void pause_record(bool start2);
-  ///Calling this function to add the record dialog box.
-  void pop_record();
-  ///Calling this function to add the playback dialog box.
-  void pop_play();
+
 private:
   Q_DISABLE_COPY(ctkQtTestingMainWindow)
+
+//  pqTestUtility *TestUtility;
   ctkQtTestingUtility *TestUtility;
   Ui::ctkQtTestingMainWindow Ui;
-  pqEventRecorder* Recorder;
-  
 };
 
 #endif
-
