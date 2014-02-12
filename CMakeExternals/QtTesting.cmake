@@ -37,9 +37,7 @@ if(NOT DEFINED QtTesting_DIR)
                      # GIT_TAG ${revision_tag}
 )
   else()
-    set(location_args GIT_REPOSITORY "${git_protocol}://github.com/zoat/QtTesting.git"
-                     # GIT_TAG ${revision_tag}
-)
+    set(location_args GIT_REPOSITORY "${git_protocol}://github.com/zoat/zoattestingctk")
   endif()
 
   # Set CMake OSX variable to pass down the external project
