@@ -83,6 +83,8 @@ void ctkErrorLogWidgetPrivate::init()
 
   QObject::connect(this->ClearButton, SIGNAL(clicked()),
                    q, SLOT(removeEntries()));
+
+  this->ErrorLogTableView->setColumnHidden(ctkErrorLogModel::ThreadIdColumn, true);
 }
 
 // --------------------------------------------------------------------------
@@ -175,15 +177,6 @@ void ctkErrorLogWidget::setErrorLogModel(ctkErrorLogModel * newErrorLogModel)
     {
     this->setAllEntriesVisible(0);
     }
-
-  d->ErrorLogTableView->setColumnHidden(ctkErrorLogModel::ThreadIdColumn, true);
-}
-
-// --------------------------------------------------------------------------
-void ctkErrorLogWidget::setColumnHidden(int columnId, bool hidden) const
-{
-  Q_D(const ctkErrorLogWidget);
-  d->ErrorLogTableView->setColumnHidden(columnId, hidden);
 }
 
 // --------------------------------------------------------------------------

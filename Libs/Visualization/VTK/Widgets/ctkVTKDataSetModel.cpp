@@ -25,11 +25,11 @@
 #include "ctkVTKDataSetModel.h"
 
 // VTK includes
-#include <vtkAbstractArray.h>
 #include <vtkCellData.h>
+#include <vtkSmartPointer.h>
+#include <vtkDataArray.h>
 #include <vtkDataSet.h>
 #include <vtkPointData.h>
-#include <vtkSmartPointer.h>
 
 class ctkVTKDataSetModelPrivate
 {
@@ -40,13 +40,13 @@ public:
   ctkVTKDataSetModelPrivate(ctkVTKDataSetModel& object);
   virtual ~ctkVTKDataSetModelPrivate();
   void init();
-  //void listenAbstractArrayModifiedEvent();
+  //void listenDataArrayModifiedEvent();
 
-  static QList<vtkAbstractArray*> attributeArrayToInsert(const ctkVTKDataSetModel::AttributeTypes& attributeType,
+  static QList<vtkDataArray*> attributeArrayToInsert(const ctkVTKDataSetModel::AttributeTypes& attributeType,
                                                      vtkDataSetAttributes * dataSetAttributes);
 
   vtkSmartPointer<vtkDataSet> DataSet;
-  bool ListenAbstractArrayModifiedEvent;
+  bool ListenDataArrayModifiedEvent;
   ctkVTKDataSetModel::AttributeTypes AttributeType;
 };
 
@@ -55,7 +55,7 @@ public:
 ctkVTKDataSetModelPrivate::ctkVTKDataSetModelPrivate(ctkVTKDataSetModel& object)
   : q_ptr(&object)
 {
-  this->ListenAbstractArrayModifiedEvent = false;
+  this->ListenDataArrayModifiedEvent = false;
   this->AttributeType = ctkVTKDataSetModel::AllAttribute;
 }
 
@@ -75,11 +75,11 @@ void ctkVTKDataSetModelPrivate::init()
 }
 /*
 //------------------------------------------------------------------------------
-void ctkVTKDataSetModelPrivate::listenAbstractArrayModifiedEvent()
+void ctkVTKDataSetModelPrivate::listenDataArrayModifiedEvent()
 {
   Q_Q(ctkVTKDataSetModel);
   q->qvtkDisconnect(0, vtkCommand::ModifiedEvent, q, SLOT(onArrayModified(vtkObject*)));
-  if (!this->ListenAbstractArrayModifiedEvent)
+  if (!this->ListenDataArrayModifiedEvent)
     {
     return;
     }
@@ -93,38 +93,38 @@ void ctkVTKDataSetModelPrivate::listenAbstractArrayModifiedEvent()
 */
 
 //------------------------------------------------------------------------------
-QList<vtkAbstractArray*> ctkVTKDataSetModelPrivate::attributeArrayToInsert(
+QList<vtkDataArray*> ctkVTKDataSetModelPrivate::attributeArrayToInsert(
     const ctkVTKDataSetModel::AttributeTypes& attributeType,
     vtkDataSetAttributes * dataSetAttributes)
 {
-  QList<vtkAbstractArray*> attributeArraysToInsert;
+  QList<vtkDataArray*> attributeArraysToInsert;
   for (int p = 0; p < dataSetAttributes->GetNumberOfArrays(); ++p)
     {
-    vtkAbstractArray * array = dataSetAttributes->GetAbstractArray(p);
+    vtkDataArray * dataArray = dataSetAttributes->GetArray(p);
 
     bool isAttributeArray = false;
-    vtkAbstractArray* attributeArrays[vtkDataSetAttributes::NUM_ATTRIBUTES];
+    vtkDataArray* attributeArrays[vtkDataSetAttributes::NUM_ATTRIBUTES];
     for(int attributeId = 0; attributeId < vtkDataSetAttributes::NUM_ATTRIBUTES; ++attributeId)
       {
-      attributeArrays[attributeId] = dataSetAttributes->GetAbstractAttribute(attributeId);
-      if (!isAttributeArray && attributeArrays[attributeId] == array)
+      attributeArrays[attributeId] = dataSetAttributes->GetAttribute(attributeId);
+      if (!isAttributeArray && attributeArrays[attributeId] == dataArray)
         {
         isAttributeArray = true;
         }
       }
 
-    if ((attributeType & ctkVTKDataSetModel::ScalarsAttribute && (array == attributeArrays[vtkDataSetAttributes::SCALARS]))
-        || (attributeType & ctkVTKDataSetModel::VectorsAttribute && (array == attributeArrays[vtkDataSetAttributes::VECTORS]))
-        || (attributeType & ctkVTKDataSetModel::NormalsAttribute && (array == attributeArrays[vtkDataSetAttributes::NORMALS]))
-        || (attributeType & ctkVTKDataSetModel::TCoordsAttribute && (array == attributeArrays[vtkDataSetAttributes::TCOORDS]))
-        || (attributeType & ctkVTKDataSetModel::TensorsAttribute && (array == attributeArrays[vtkDataSetAttributes::TENSORS]))
-        || (attributeType & ctkVTKDataSetModel::GlobalIDsAttribute && (array == attributeArrays[vtkDataSetAttributes::GLOBALIDS]))
-        || (attributeType & ctkVTKDataSetModel::PedigreeIDsAttribute && (array == attributeArrays[vtkDataSetAttributes::PEDIGREEIDS]))
-        || (attributeType & ctkVTKDataSetModel::EdgeFlagAttribute && (array == attributeArrays[vtkDataSetAttributes::EDGEFLAG]))
+    if ((attributeType & ctkVTKDataSetModel::ScalarsAttribute && (dataArray == attributeArrays[vtkDataSetAttributes::SCALARS]))
+        || (attributeType & ctkVTKDataSetModel::VectorsAttribute && (dataArray == attributeArrays[vtkDataSetAttributes::VECTORS]))
+        || (attributeType & ctkVTKDataSetModel::NormalsAttribute && (dataArray == attributeArrays[vtkDataSetAttributes::NORMALS]))
+        || (attributeType & ctkVTKDataSetModel::TCoordsAttribute && (dataArray == attributeArrays[vtkDataSetAttributes::TCOORDS]))
+        || (attributeType & ctkVTKDataSetModel::TensorsAttribute && (dataArray == attributeArrays[vtkDataSetAttributes::TENSORS]))
+        || (attributeType & ctkVTKDataSetModel::GlobalIDsAttribute && (dataArray == attributeArrays[vtkDataSetAttributes::GLOBALIDS]))
+        || (attributeType & ctkVTKDataSetModel::PedigreeIDsAttribute && (dataArray == attributeArrays[vtkDataSetAttributes::PEDIGREEIDS]))
+        || (attributeType & ctkVTKDataSetModel::EdgeFlagAttribute && (dataArray == attributeArrays[vtkDataSetAttributes::EDGEFLAG]))
         || (attributeType & ctkVTKDataSetModel::NoAttribute && !isAttributeArray)
         )
       {
-      attributeArraysToInsert << dataSetAttributes->GetAbstractArray(p);
+      attributeArraysToInsert << dataSetAttributes->GetArray(p);
       }
     }
   return attributeArraysToInsert;
@@ -197,29 +197,29 @@ void ctkVTKDataSetModel::setAttributeTypes(const AttributeTypes& attributeTypes)
 }
 
 //------------------------------------------------------------------------------
-vtkAbstractArray* ctkVTKDataSetModel::arrayFromItem(QStandardItem* arrayItem)const
+vtkDataArray* ctkVTKDataSetModel::arrayFromItem(QStandardItem* dataArrayItem)const
 {
-  if (arrayItem == 0 || arrayItem == this->invisibleRootItem())
+  if (dataArrayItem == 0 || dataArrayItem == this->invisibleRootItem())
     {
     return 0;
     }
-  QVariant arrayPointer = arrayItem->data(ctkVTK::PointerRole);
-  Q_ASSERT(arrayPointer.isValid());
-  vtkAbstractArray* array = static_cast<vtkAbstractArray*>(
-    reinterpret_cast<void *>(arrayPointer.toLongLong()));
-  Q_ASSERT(array);
-  return array;
+  QVariant dataArrayPointer = dataArrayItem->data(ctkVTK::PointerRole);
+  Q_ASSERT(dataArrayPointer.isValid());
+  vtkDataArray* dataArray = static_cast<vtkDataArray*>(
+    reinterpret_cast<void *>(dataArrayPointer.toLongLong()));
+  Q_ASSERT(dataArray);
+  return dataArray;
 }
 
 //------------------------------------------------------------------------------
-QStandardItem* ctkVTKDataSetModel::itemFromArray(vtkAbstractArray* array, int column)const
+QStandardItem* ctkVTKDataSetModel::itemFromArray(vtkDataArray* dataArray, int column)const
 {
-  if (array == 0)
+  if (dataArray == 0)
     {
     return 0;
     }
   QModelIndexList indexes = this->match(this->index(-1,-1), ctkVTK::PointerRole,
-                                      reinterpret_cast<long long>(array), 1,
+                                      reinterpret_cast<long long>(dataArray), 1,
                                       Qt::MatchExactly | Qt::MatchRecursive);
   while (indexes.size())
     {
@@ -228,17 +228,17 @@ QStandardItem* ctkVTKDataSetModel::itemFromArray(vtkAbstractArray* array, int co
       return this->itemFromIndex(indexes[0]);
       }
     indexes = this->match(indexes[0], ctkVTK::PointerRole,
-                          reinterpret_cast<long long>(array), 1,
+                          reinterpret_cast<long long>(dataArray), 1,
                           Qt::MatchExactly | Qt::MatchRecursive);
     }
   return 0;
 }
 
 //------------------------------------------------------------------------------
-QModelIndexList ctkVTKDataSetModel::indexes(vtkAbstractArray* array)const
+QModelIndexList ctkVTKDataSetModel::indexes(vtkDataArray* dataArray)const
 {
   return this->match(this->index(-1,-1), ctkVTK::PointerRole,
-                     QVariant::fromValue(reinterpret_cast<long long>(array)),
+                     QVariant::fromValue(reinterpret_cast<long long>(dataArray)),
                      -1, Qt::MatchExactly | Qt::MatchRecursive);
 }
 
@@ -283,51 +283,51 @@ void ctkVTKDataSetModel::populateDataSet()
   Q_D(ctkVTKDataSetModel);
   Q_ASSERT(d->DataSet);
 
-  QList<vtkAbstractArray*> attributeArrays;
+  QList<vtkDataArray*> attributeArrays;
   attributeArrays << ctkVTKDataSetModelPrivate::attributeArrayToInsert(d->AttributeType, d->DataSet->GetPointData());
   attributeArrays << ctkVTKDataSetModelPrivate::attributeArrayToInsert(d->AttributeType, d->DataSet->GetCellData());
-  foreach(vtkAbstractArray* attributeArray, attributeArrays)
+  foreach(vtkDataArray* attributeArray, attributeArrays)
     {
     this->insertArray(attributeArray);
     }
 }
 
 //------------------------------------------------------------------------------
-void ctkVTKDataSetModel::insertArray(vtkAbstractArray* array)
+void ctkVTKDataSetModel::insertArray(vtkDataArray* dataArray)
 {
-  this->insertArray(array, this->rowCount());
+  this->insertArray(dataArray, this->rowCount());
 }
 
 //------------------------------------------------------------------------------
-void ctkVTKDataSetModel::insertArray(vtkAbstractArray* array, int row)
+void ctkVTKDataSetModel::insertArray(vtkDataArray* dataArray, int row)
 {
   Q_D(ctkVTKDataSetModel);
-  Q_ASSERT(vtkAbstractArray::SafeDownCast(array));
+  Q_ASSERT(vtkDataArray::SafeDownCast(dataArray));
 
   QList<QStandardItem*> items;
   for (int i= 0; i < this->columnCount(); ++i)
     {
     QStandardItem* newArrayItem = new QStandardItem();
-    this->updateItemFromArray(newArrayItem, array, i);
+    this->updateItemFromArray(newArrayItem, dataArray, i);
     items.append(newArrayItem);
     }
   this->insertRow(row,items);
   // TODO: don't listen to nodes that are hidden from editors ?
-  if (d->ListenAbstractArrayModifiedEvent)
+  if (d->ListenDataArrayModifiedEvent)
     {
-    qvtkConnect(array, vtkCommand::ModifiedEvent,
+    qvtkConnect(dataArray, vtkCommand::ModifiedEvent,
                 this, SLOT(onArrayModified(vtkObject*)));
     }
 }
 
 //------------------------------------------------------------------------------
-void ctkVTKDataSetModel::updateItemFromArray(QStandardItem* item, vtkAbstractArray* array, int column)
+void ctkVTKDataSetModel::updateItemFromArray(QStandardItem* item, vtkDataArray* dataArray, int column)
 {
-  item->setData(QVariant::fromValue(reinterpret_cast<long long>(array)), ctkVTK::PointerRole);
+  item->setData(QVariant::fromValue(reinterpret_cast<long long>(dataArray)), ctkVTK::PointerRole);
   switch (column)
     {
     case 0:
-      item->setText(QString(array->GetName()));
+      item->setText(QString(dataArray->GetName()));
       break;
     default:
       Q_ASSERT(column == 0);
@@ -337,9 +337,9 @@ void ctkVTKDataSetModel::updateItemFromArray(QStandardItem* item, vtkAbstractArr
 
 //------------------------------------------------------------------------------
 /*
-void ctkVTKDataSetModel::updateItemFromPointsArray(QStandardItem* item, vtkAbstractArray* array, int column)
+void ctkVTKDataSetModel::updateItemFromPointsArray(QStandardItem* item, vtkDataArray* dataArray, int column)
 {
-  this->updateItemFromArray(item, array, column);
+  this->updateItemFromArray(item, dataArray, column);
   switch (column)
     {
     case 0:
@@ -352,9 +352,9 @@ void ctkVTKDataSetModel::updateItemFromPointsArray(QStandardItem* item, vtkAbstr
 }
 
 //------------------------------------------------------------------------------
-void ctkVTKDataSetModel::updateItemFromCellsArray(QStandardItem* item, vtkAbstractArray* array, int column)
+void ctkVTKDataSetModel::updateItemFromCellsArray(QStandardItem* item, vtkDataArray* dataArray, int column)
 {
-  this->updateItemFromArray(item, array, column);
+  this->updateItemFromArray(item, dataArray, column);
   switch (column)
     {
     case 0:
@@ -369,11 +369,11 @@ void ctkVTKDataSetModel::updateItemFromCellsArray(QStandardItem* item, vtkAbstra
 */
 
 //------------------------------------------------------------------------------
-void ctkVTKDataSetModel::updateArrayFromItem(vtkAbstractArray* array, QStandardItem* item)
+void ctkVTKDataSetModel::updateArrayFromItem(vtkDataArray* dataArray, QStandardItem* item)
 {
   if (item->column() == 0)
     {
-    array->SetName(item->text().toLatin1());
+    dataArray->SetName(item->text().toLatin1());
     }
 }
 
@@ -385,23 +385,23 @@ void ctkVTKDataSetModel::onDataSetModified(vtkObject* dataSet)
 }
 
 //------------------------------------------------------------------------------
-void ctkVTKDataSetModel::onArrayModified(vtkObject* modifiedArray)
+void ctkVTKDataSetModel::onArrayModified(vtkObject* array)
 {
-  vtkAbstractArray* array = vtkAbstractArray::SafeDownCast(modifiedArray);
-  Q_ASSERT(array);
-  QModelIndexList arrayIndexes = this->indexes(array);
+  vtkDataArray* dataArray = vtkDataArray::SafeDownCast(array);
+  Q_ASSERT(dataArray);
+  QModelIndexList arrayIndexes = this->indexes(dataArray);
 
   foreach (QModelIndex index, arrayIndexes)
     {
     QStandardItem* item = this->itemFromIndex(index);
-    this->updateItemFromArray(item, array, item->column());
+    this->updateItemFromArray(item, dataArray, item->column());
     }
 }
 
 //------------------------------------------------------------------------------
 void ctkVTKDataSetModel::onItemChanged(QStandardItem * item)
 {
-  vtkAbstractArray* array = this->arrayFromItem(item);
-  Q_ASSERT(array);
-  this->updateArrayFromItem(array, item);
+  vtkDataArray* dataArray = this->arrayFromItem(item);
+  Q_ASSERT(dataArray);
+  this->updateArrayFromItem(dataArray, item);
 }

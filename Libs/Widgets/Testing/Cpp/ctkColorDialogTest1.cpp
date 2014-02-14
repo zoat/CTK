@@ -25,7 +25,6 @@
 // CTK includes
 #include "ctkColorDialog.h"
 #include "ctkColorPickerButton.h"
-#include "ctkTest.h"
 
 // STD includes
 #include <cstdlib>
@@ -90,9 +89,7 @@ int ctkColorDialogTest1(int argc, char * argv [] )
   // the following is only in interactive mode
   if (argc < 2 || QString(argv[1]) != "-I" )
     {
-    QTest::qWaitForWindowShown(&colorDialog);
-    colorDialog.accept();
-    return EXIT_SUCCESS;
+    QTimer::singleShot(200, &colorDialog, SLOT(accept()));
     }
 
   return app.exec();

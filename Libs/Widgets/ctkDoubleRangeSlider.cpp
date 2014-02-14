@@ -21,13 +21,10 @@
 // Qt includes
 #include <QDebug>
 #include <QHBoxLayout>
-#include <QVariant>
-#include <QWeakPointer>
 
 // CTK includes
 #include "ctkRangeSlider.h"
 #include "ctkDoubleRangeSlider.h"
-#include "ctkValueProxy.h"
 
 // STD includes
 #include <limits>
@@ -64,8 +61,6 @@ public:
   double SingleStep;
   double MinValue;
   double MaxValue;
-
-  QWeakPointer<ctkValueProxy> Proxy;
 
 private:
   Q_DISABLE_COPY(ctkDoubleRangeSliderPrivate);
@@ -147,6 +142,7 @@ int ctkDoubleRangeSliderPrivate::toInt(double doubleValue)const
 #endif
   tmp = qBound(minInt, tmp, maxInt);
   int intValue = qRound(tmp);
+  //qDebug() << __FUNCTION__ << doubleValue << tmp << intValue;
   return intValue;
 }
 
@@ -212,15 +208,11 @@ ctkDoubleRangeSlider::~ctkDoubleRangeSlider()
 }
 
 // --------------------------------------------------------------------------
-void ctkDoubleRangeSlider::setMinimum(double newMin)
+void ctkDoubleRangeSlider::setMinimum(double min)
 {
   Q_D(ctkDoubleRangeSlider);
-  if (d->Proxy)
-    {
-    newMin = d->Proxy.data()->proxyValueFromValue(newMin);
-    }
   double oldMin = d->Minimum;
-  d->Minimum = newMin;
+  d->Minimum = min;
   if (d->Minimum >= d->MinValue)
     {// TBD: use same offset
     d->updateMinOffset(d->Minimum);
@@ -229,13 +221,12 @@ void ctkDoubleRangeSlider::setMinimum(double newMin)
     {// TBD: use same offset
     d->updateMaxOffset(d->Minimum);
     }
-  bool wasSettingRange = d->SettingRange;
   d->SettingRange = true;
-  d->Slider->setMinimum(d->toInt(newMin));
-  d->SettingRange = wasSettingRange;
-  if (!wasSettingRange && d->Minimum != oldMin)
+  d->Slider->setMinimum(d->toInt(min));
+  d->SettingRange = false;
+  if (d->Minimum != oldMin)
     {
-    emit this->rangeChanged(this->minimum(), this->maximum());
+    emit this->rangeChanged(d->Minimum, d->Maximum);
     }
 }
 
@@ -243,26 +234,15 @@ void ctkDoubleRangeSlider::setMinimum(double newMin)
 double ctkDoubleRangeSlider::minimum()const
 {
   Q_D(const ctkDoubleRangeSlider);
-  double min = d->Minimum;
-  double max = d->Maximum;
-  if (d->Proxy)
-    {
-    min = d->Proxy.data()->valueFromProxyValue(min);
-    max = d->Proxy.data()->valueFromProxyValue(max);
-    }
-  return qMin(min, max);
+  return d->Minimum;
 }
 
 // --------------------------------------------------------------------------
-void ctkDoubleRangeSlider::setMaximum(double newMax)
+void ctkDoubleRangeSlider::setMaximum(double max)
 {
   Q_D(ctkDoubleRangeSlider);
-  if (d->Proxy)
-    {
-    newMax = d->Proxy.data()->proxyValueFromValue(newMax);
-    }
   double oldMax = d->Maximum;
-  d->Maximum = newMax;
+  d->Maximum = max;
   if (d->Maximum <= d->MinValue)
     {// TBD: use same offset
     d->updateMinOffset(d->Maximum);
@@ -271,13 +251,12 @@ void ctkDoubleRangeSlider::setMaximum(double newMax)
     {// TBD: use same offset ?
     d->updateMaxOffset(d->Maximum);
     }
-  bool wasSettingRange = d->SettingRange;
   d->SettingRange = true;
-  d->Slider->setMaximum(d->toInt(newMax));
-  d->SettingRange = wasSettingRange;
-  if (!wasSettingRange && d->Maximum != oldMax)
+  d->Slider->setMaximum(d->toInt(max));
+  d->SettingRange = false;
+  if (d->Maximum != oldMax)
     {
-    emit this->rangeChanged(this->minimum(), this->maximum());
+    emit this->rangeChanged(d->Minimum, d->Maximum);
     }
 }
 
@@ -285,35 +264,17 @@ void ctkDoubleRangeSlider::setMaximum(double newMax)
 double ctkDoubleRangeSlider::maximum()const
 {
   Q_D(const ctkDoubleRangeSlider);
-  double min = d->Minimum;
-  double max = d->Maximum;
-  if (d->Proxy)
-    {
-    min = d->Proxy.data()->valueFromProxyValue(min);
-    max = d->Proxy.data()->valueFromProxyValue(max);
-    }
-  return qMax(min, max);
+  return d->Maximum;
 }
 
 // --------------------------------------------------------------------------
-void ctkDoubleRangeSlider::setRange(double newMin, double newMax)
+void ctkDoubleRangeSlider::setRange(double min, double max)
 {
   Q_D(ctkDoubleRangeSlider);
-  if (d->Proxy)
-    {
-    newMin = d->Proxy.data()->proxyValueFromValue(newMin);
-    newMax = d->Proxy.data()->proxyValueFromValue(newMax);
-    }
-
-  if (newMin > newMax)
-    {
-    qSwap(newMin, newMax);
-    }
-
   double oldMin = d->Minimum;
   double oldMax = d->Maximum;
-  d->Minimum = newMin;
-  d->Maximum = newMax;
+  d->Minimum = min;
+  d->Maximum = max;
   if (d->Minimum >= d->MinValue)
     {// TBD: use same offset
     d->updateMinOffset(d->Minimum);
@@ -330,13 +291,12 @@ void ctkDoubleRangeSlider::setRange(double newMin, double newMax)
     {// TBD: use same offset ?
     d->updateMaxOffset(d->Maximum);
     }
-  bool wasSettingRange = d->SettingRange;
   d->SettingRange = true;
-  d->Slider->setRange(d->toInt(newMin), d->toInt(newMax));
-  d->SettingRange = wasSettingRange;
-  if (!wasSettingRange && (d->Minimum != oldMin || d->Maximum != oldMax))
+  d->Slider->setRange(d->toInt(min), d->toInt(max));
+  d->SettingRange = false;
+  if (d->Minimum != oldMin || d->Maximum != oldMax)
     {
-    emit this->rangeChanged(this->minimum(), this->maximum());
+    emit this->rangeChanged(d->Minimum, d->Maximum);
     }
 }
 
@@ -344,90 +304,50 @@ void ctkDoubleRangeSlider::setRange(double newMin, double newMax)
 double ctkDoubleRangeSlider::minimumPosition()const
 {
   Q_D(const ctkDoubleRangeSlider);
-  int intMinPos = d->Slider->minimumPosition();
-  double minPos = d->safeMinFromInt(intMinPos);
-  if (d->Proxy)
-    {
-    minPos = d->Proxy.data()->valueFromProxyValue(minPos);
-    }
-  return minPos;
+  return d->safeMinFromInt(d->Slider->minimumPosition());
 }
 
 // --------------------------------------------------------------------------
-void ctkDoubleRangeSlider::setMinimumPosition(double newMinPos)
+void ctkDoubleRangeSlider::setMinimumPosition(double minPos)
 {
   Q_D(ctkDoubleRangeSlider);
-  if (d->Proxy)
-    {
-    newMinPos = d->Proxy.data()->proxyValueFromValue(newMinPos);
-    }
-  int newIntMinPos = d->toInt(newMinPos);
-  d->Slider->setMinimumPosition(newIntMinPos);
+  d->Slider->setMinimumPosition(d->toInt(minPos));
 }
 
 // --------------------------------------------------------------------------
 double ctkDoubleRangeSlider::maximumPosition()const
 {
   Q_D(const ctkDoubleRangeSlider);
-  int intMaxPos = d->Slider->maximumPosition();
-  double maxPos = d->safeMaxFromInt(intMaxPos);
-  if (d->Proxy)
-    {
-    maxPos = d->Proxy.data()->valueFromProxyValue(maxPos);
-    }
-  return maxPos;
+  return d->safeMaxFromInt(d->Slider->maximumPosition());
 }
 
 // --------------------------------------------------------------------------
-void ctkDoubleRangeSlider::setMaximumPosition(double newMaxPos)
+void ctkDoubleRangeSlider::setMaximumPosition(double maxPos)
 {
   Q_D(ctkDoubleRangeSlider);
-  if (d->Proxy)
-    {
-    newMaxPos = d->Proxy.data()->proxyValueFromValue(newMaxPos);
-    }
-  int newIntMaxPos = d->toInt(newMaxPos);
-  d->Slider->setMaximumPosition(newIntMaxPos);
+  d->Slider->setMaximumPosition(d->toInt(maxPos));
 }
 
 // --------------------------------------------------------------------------
-void ctkDoubleRangeSlider::setPositions(double newMinPos, double newMaxPos)
+void ctkDoubleRangeSlider::setPositions(double minPos, double maxPos)
 {
   Q_D(ctkDoubleRangeSlider);
-  if (d->Proxy)
-    {
-    newMinPos = d->Proxy.data()->proxyValueFromValue(newMinPos);
-    newMaxPos = d->Proxy.data()->proxyValueFromValue(newMaxPos);
-    }
-  int newIntMinPos = d->toInt(newMinPos);
-  int newIntMaxPos = d->toInt(newMaxPos);
-  d->Slider->setPositions(newIntMinPos, newIntMaxPos);
+  d->Slider->setPositions(d->toInt(minPos), d->toInt(maxPos));
 }
 
 // --------------------------------------------------------------------------
 double ctkDoubleRangeSlider::minimumValue()const
 {
   Q_D(const ctkDoubleRangeSlider);
-  double minValue = d->MinValue;
-  double maxValue = d->MaxValue;
-  if (d->Proxy)
-    {
-    minValue = d->Proxy.data()->valueFromProxyValue(minValue);
-    maxValue = d->Proxy.data()->valueFromProxyValue(maxValue);
-    }
-  return qMin(minValue, maxValue);
+  return d->MinValue;
 }
 
 // --------------------------------------------------------------------------
 void ctkDoubleRangeSlider::setMinimumValue(double newMinValue)
 {
   Q_D(ctkDoubleRangeSlider);
-  if (d->Proxy)
-    {
-    newMinValue = d->Proxy.data()->proxyValueFromValue(newMinValue);
-    }
   newMinValue = qBound(d->Minimum, newMinValue, d->Maximum);
-  d->updateMinOffset(newMinValue);
+  d->updateMinOffset(newMinValue);  
   if (newMinValue >= d->MaxValue)
     {
     d->updateMaxOffset(newMinValue);
@@ -447,8 +367,8 @@ void ctkDoubleRangeSlider::setMinimumValue(double newMinValue)
     // similar to the old value.
     if (qAbs(newMinValue - oldValue) > (d->SingleStep * 0.000000001))
       {
-      emit this->valuesChanged(this->minimumValue(), this->maximumValue());
-      emit this->minimumValueChanged(this->minimumValue());
+      emit this->valuesChanged(newMinValue, this->maximumValue());
+      emit this->minimumValueChanged(newMinValue);
       }
     }
 }
@@ -457,24 +377,13 @@ void ctkDoubleRangeSlider::setMinimumValue(double newMinValue)
 double ctkDoubleRangeSlider::maximumValue()const
 {
   Q_D(const ctkDoubleRangeSlider);
-  double minValue = d->MinValue;
-  double maxValue = d->MaxValue;
-  if (d->Proxy)
-    {
-    minValue = d->Proxy.data()->valueFromProxyValue(minValue);
-    maxValue = d->Proxy.data()->valueFromProxyValue(maxValue);
-    }
-  return qMax(minValue, maxValue);
+  return d->MaxValue;
 }
 
 // --------------------------------------------------------------------------
 void ctkDoubleRangeSlider::setMaximumValue(double newMaxValue)
 {
   Q_D(ctkDoubleRangeSlider);
-  if (d->Proxy)
-    {
-    newMaxValue = d->Proxy.data()->proxyValueFromValue(newMaxValue);
-    }
   newMaxValue = qBound(d->Minimum, newMaxValue, d->Maximum);
   d->updateMaxOffset(newMaxValue);
   if (newMaxValue <= d->MinValue)
@@ -496,8 +405,8 @@ void ctkDoubleRangeSlider::setMaximumValue(double newMaxValue)
     // similar to the old value.
     if (qAbs(newMaxValue - oldValue) > (d->SingleStep * 0.000000001))
       {
-      emit this->valuesChanged(this->minimumValue(), this->maximumValue());
-      emit this->maximumValueChanged(this->maximumValue());
+      emit this->valuesChanged(this->minimumValue(), newMaxValue);
+      emit this->maximumValueChanged(newMaxValue);
       }
     }
 }
@@ -509,11 +418,6 @@ void ctkDoubleRangeSlider::setValues(double newMinVal, double newMaxVal)
   // We can't call setMinimumValue() and setMaximumValue() as they would
   // generate an inconsistent state. when minimumValueChanged() is fired the
   // new max value wouldn't be updated yet.
-  if (d->Proxy)
-    {
-    newMaxVal = d->Proxy.data()->proxyValueFromValue(newMaxVal);
-    newMinVal = d->Proxy.data()->proxyValueFromValue(newMinVal);
-    }
   double newMinValue = qBound(d->Minimum, qMin(newMinVal, newMaxVal), d->Maximum);
   double newMaxValue = qBound(d->Minimum, qMax(newMinVal, newMaxVal), d->Maximum);
   d->updateMinOffset(newMinValue);
@@ -537,17 +441,16 @@ void ctkDoubleRangeSlider::setValues(double newMinVal, double newMaxVal)
     // similar to the old value.
     bool minChanged = qAbs(newMinValue - oldMinValue) > (d->SingleStep * 0.000000001);
     bool maxChanged = qAbs(newMaxValue - oldMaxValue) > (d->SingleStep * 0.000000001);
-
     if (minChanged || maxChanged)
       {
-      emit this->valuesChanged(this->minimumValue(), this->maximumValue());
+      emit this->valuesChanged(newMinValue, newMaxValue);
       if (minChanged)
         {
-        emit this->minimumValueChanged(this->minimumValue());
+        emit this->minimumValueChanged(newMinValue);
         }
       if (maxChanged)
         {
-        emit this->maximumValueChanged(this->maximumValue());
+        emit this->maximumValueChanged(newMaxValue);
         }
       }
     }
@@ -557,82 +460,45 @@ void ctkDoubleRangeSlider::setValues(double newMinVal, double newMaxVal)
 double ctkDoubleRangeSlider::singleStep()const
 {
   Q_D(const ctkDoubleRangeSlider);
-  double step = d->SingleStep;
-  return step;
+  return d->SingleStep;
 }
 
 // --------------------------------------------------------------------------
 void ctkDoubleRangeSlider::setSingleStep(double newStep)
 {
   Q_D(ctkDoubleRangeSlider);
-  if (!this->isValidStep(newStep))
-    {
-    qWarning() << "ctkDoubleRangeSlider::setSingleStep("<< newStep <<")"
-               << "is outside of valid bounds.";
-    return;
-    }
   d->SingleStep = newStep;
-  // The following can fire A LOT of signals that shouldn't be fired.
+  // The following can fire A LOT of signals that shouldn't be 
+  // fired.
   bool oldBlockSignals = this->blockSignals(true);
   d->updateMinOffset(d->MinValue);
   d->updateMaxOffset(d->MaxValue);
-  double minimum = d->Minimum;
-  double maximum = d->Maximum;
-  // update the new int values
-  double minValue = d->MinValue;
-  double maxValue = d->MaxValue;
-  if (d->Proxy)
-    {
-    minimum = d->Proxy.data()->valueFromProxyValue(minimum);
-    maximum = d->Proxy.data()->valueFromProxyValue(maximum);
-    minValue = d->Proxy.data()->valueFromProxyValue(minValue);
-    maxValue = d->Proxy.data()->valueFromProxyValue(maxValue);
-   }
-  // calling setRange can change the MinimumValue and MaximumValue values,
-  // this is why we re-set them after.
-  this->setRange(minimum, maximum);
-  this->setValues(minValue, maxValue);
-  this->setPositions(minValue, maxValue);
+  // update the new values of the ctkRangeSlider
+  double _minvalue = d->MinValue;
+  double _maxvalue = d->MaxValue;
+  // calling setMinimum or setMaximum can change the values MinimumValue
+  // and MaximumValue, this is why we re-set them later.  
+  this->setMinimum(d->Minimum);
+  this->setMaximum(d->Maximum);
+  this->setMinimumValue(_minvalue);
+  this->setMinimumPosition(_minvalue);
+  this->setMaximumValue(_maxvalue);
+  this->setMaximumPosition(_maxvalue);
   this->blockSignals(oldBlockSignals);
-}
-
-// --------------------------------------------------------------------------
-bool ctkDoubleRangeSlider::isValidStep(double step)const
-{
-  Q_D(const ctkDoubleRangeSlider);
-  if (d->Minimum == d->Maximum)
-    {
-    return true;
-    }
-  const double minStep = qMax(d->Maximum / std::numeric_limits<double>::max(),
-                              std::numeric_limits<double>::epsilon());
-  const double maxStep = qMin(d->Maximum - d->Minimum,
-                              static_cast<double>(std::numeric_limits<int>::max()));
-  return (step >= minStep) && (step <= maxStep);
 }
 
 // --------------------------------------------------------------------------
 double ctkDoubleRangeSlider::tickInterval()const
 {
   Q_D(const ctkDoubleRangeSlider);
-  double interval = d->SingleStep * d->Slider->tickInterval();
-  if (d->Proxy)
-    {
-    interval = d->Proxy.data()->valueFromProxyValue(interval);
-    }
-  return interval;
+  return d->SingleStep * d->Slider->tickInterval();
 }
 
 // --------------------------------------------------------------------------
-void ctkDoubleRangeSlider::setTickInterval(double newInterval)
+void ctkDoubleRangeSlider::setTickInterval(double newTickInterval)
 {
   Q_D(ctkDoubleRangeSlider);
-  if (d->Proxy)
-    {
-    newInterval = d->Proxy.data()->proxyValueFromValue(newInterval);
-    }
-  int newIntInterval = d->toInt(newInterval);
-  d->Slider->setTickInterval(newIntInterval);
+  d->Slider->setTickInterval(d->toInt(newTickInterval));
 }
 
 // --------------------------------------------------------------------------
@@ -726,71 +592,46 @@ void ctkDoubleRangeSlider::onValuesChanged(int newMinValue, int newMaxValue)
     }
   d->MinValue = doubleNewMinValue;
   d->MaxValue = doubleNewMaxValue;
-  emit this->valuesChanged(this->minimumValue(), this->maximumValue());
+  emit this->valuesChanged(d->MinValue, d->MaxValue);
   if (emitMinValueChanged)
     {
-    emit this->minimumValueChanged(this->minimumValue());
+    emit this->minimumValueChanged(d->MinValue);
     }
   if (emitMaxValueChanged)
     {
-    emit this->maximumValueChanged(this->maximumValue());
+    emit this->maximumValueChanged(d->MaxValue);
     }
 }
 
 // --------------------------------------------------------------------------
-void ctkDoubleRangeSlider::onMinPosChanged(int newIntMinPos)
+void ctkDoubleRangeSlider::onMinPosChanged(int newPosition)
 {
   Q_D(const ctkDoubleRangeSlider);
-  double newMinPos = d->safeMinFromInt(newIntMinPos);
-  if (d->Proxy)
-    {
-    newMinPos = d->Proxy.data()->valueFromProxyValue(newMinPos);
-    }
-  emit this->minimumPositionChanged(newMinPos);
+  emit this->minimumPositionChanged(d->safeMinFromInt(newPosition));
 }
 
 // --------------------------------------------------------------------------
-void ctkDoubleRangeSlider::onMaxPosChanged(int newIntMaxPos)
+void ctkDoubleRangeSlider::onMaxPosChanged(int newPosition)
 {
   Q_D(const ctkDoubleRangeSlider);
-  double newMaxPos = d->safeMaxFromInt(newIntMaxPos);
-  if (d->Proxy)
-    {
-    //newMaxPos = d->Proxy.data()->valueFromProxyValue(newMaxPos);
-    }
-  emit this->maximumPositionChanged(newMaxPos);
+  emit this->maximumPositionChanged(d->safeMaxFromInt(newPosition));
 }
 
 // --------------------------------------------------------------------------
-void ctkDoubleRangeSlider::onPositionsChanged(int newIntMinPos, int newIntMaxPos)
+void ctkDoubleRangeSlider::onPositionsChanged(int min, int max)
 {
   Q_D(const ctkDoubleRangeSlider);
-  double newMinPos = d->safeMinFromInt(newIntMinPos);
-  double newMaxPos = d->safeMaxFromInt(newIntMaxPos);
-  if (d->Proxy)
-    {
-    newMinPos = d->Proxy.data()->valueFromProxyValue(newMinPos);
-    newMaxPos = d->Proxy.data()->valueFromProxyValue(newMaxPos);
-    }
-  emit this->positionsChanged(newMinPos, newMaxPos);
+  emit this->positionsChanged(d->safeMinFromInt(min), d->safeMaxFromInt(max));
 }
 
 // --------------------------------------------------------------------------
-void ctkDoubleRangeSlider::onRangeChanged(int newIntMin, int newIntMax)
+void ctkDoubleRangeSlider::onRangeChanged(int min, int max)
 {
   Q_D(const ctkDoubleRangeSlider);
-  if (d->SettingRange)
+  if (!d->SettingRange)
     {
-    return;
+    this->setRange(d->minFromInt(min), d->maxFromInt(max));
     }
-  double newMin = d->minFromInt(newIntMin);
-  double newMax = d->maxFromInt(newIntMax);
-  if (d->Proxy)
-    {
-    newMin = d->Proxy.data()->valueFromProxyValue(newMin);
-    newMax = d->Proxy.data()->valueFromProxyValue(newMax);
-    }
-  this->setRange(newMin, newMax);
 }
 
 // --------------------------------------------------------------------------
@@ -816,65 +657,4 @@ void ctkDoubleRangeSlider::setSlider(ctkRangeSlider* newslider)
   qobject_cast<QHBoxLayout*>(this->layout())->addWidget(newslider);
   d->Slider = newslider;
   d->connectSlider();
-}
-
-//----------------------------------------------------------------------------
-void ctkDoubleRangeSlider::setValueProxy(ctkValueProxy* proxy)
-{
-  Q_D(ctkDoubleRangeSlider);
-  if (proxy == d->Proxy.data())
-    {
-    return;
-    }
-
-  this->onValueProxyAboutToBeModified();
-
-  if (d->Proxy.data())
-    {
-    disconnect(d->Proxy.data(), 0, this, 0);
-    }
-
-  d->Proxy = proxy;
-
-  if (d->Proxy)
-    {
-    connect(d->Proxy.data(), SIGNAL(proxyAboutToBeModified()),
-            this, SLOT(onValueProxyAboutToBeModified()));
-    connect(d->Proxy.data(), SIGNAL(proxyModified()),
-            this, SLOT(onValueProxyModified()));
-    }
-
-  this->onValueProxyModified();
-}
-
-//----------------------------------------------------------------------------
-ctkValueProxy* ctkDoubleRangeSlider::valueProxy() const
-{
-  Q_D(const ctkDoubleRangeSlider);
-  return d->Proxy.data();
-}
-
-//-----------------------------------------------------------------------------
-void ctkDoubleRangeSlider::onValueProxyAboutToBeModified()
-{
-  Q_D(ctkDoubleRangeSlider);
-  d->Slider->setProperty("inputMinimumValue", this->minimumValue());
-  d->Slider->setProperty("inputMaximumValue", this->maximumValue());
-  d->Slider->setProperty("inputMinimum", this->minimum());
-  d->Slider->setProperty("inputMaximum", this->maximum());
-}
-
-//-----------------------------------------------------------------------------
-void ctkDoubleRangeSlider::onValueProxyModified()
-{
-  Q_D(ctkDoubleRangeSlider);
-  bool wasBlockingSignals = this->blockSignals(true);
-  bool wasSettingRange = d->SettingRange;
-  d->SettingRange = true;
-  this->setRange(d->Slider->property("inputMinimum").toDouble(),
-                 d->Slider->property("inputMaximum").toDouble());
-  d->SettingRange = wasSettingRange;
-  this->setValues(d->Slider->property("inputMinimumValue").toDouble(),
-                  d->Slider->property("inputMaximumValue").toDouble());
-  this->blockSignals(wasBlockingSignals);
 }

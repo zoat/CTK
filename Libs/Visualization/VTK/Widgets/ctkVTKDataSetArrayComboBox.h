@@ -29,14 +29,13 @@
 #include "ctkVTKDataSetModel.h"
 class ctkVTKDataSetArrayComboBoxPrivate;
 
-class vtkAbstractArray;
+class vtkDataArray;
 class vtkDataSet;
 
 /// \ingroup Visualization_VTK_Widgets
 ///
 /// QComboBox linked to vtkDataSet field arrays
-class CTK_VISUALIZATION_VTK_WIDGETS_EXPORT ctkVTKDataSetArrayComboBox
-  : public QComboBox
+class CTK_VISUALIZATION_VTK_WIDGETS_EXPORT ctkVTKDataSetArrayComboBox : public QComboBox
 {
   Q_OBJECT
   Q_PROPERTY(ctkVTKDataSetModel::AttributeTypes attributeTypes READ attributeTypes WRITE setAttributeTypes)
@@ -49,28 +48,24 @@ public:
   explicit ctkVTKDataSetArrayComboBox(QWidget* parent = 0);
   virtual ~ctkVTKDataSetArrayComboBox();
 
-  vtkAbstractArray* currentArray()const;
+  vtkDataArray* currentArray()const;
   QString currentArrayName()const;
   vtkDataSet* dataSet()const;
 
   ctkVTKDataSetModel::AttributeTypes attributeTypes()const;
   void setAttributeTypes(const ctkVTKDataSetModel::AttributeTypes& attributeTypes);
 
-  /// Return a pointer to the model used to populate the combobox.
-  /// \sa dataSet()
   ctkVTKDataSetModel* dataSetModel()const;
 
 public Q_SLOTS:
-  /// Set the dataset to observe. It is used to as the "model" for the combobox.
-  /// \sa dataSet(), dataSetModel()
   void setDataSet(vtkDataSet* dataSet);
   /// The array must exist in the dataset
-  void setCurrentArray(vtkAbstractArray* dataArray);
+  void setCurrentArray(vtkDataArray* dataArray);
   /// the array must exist in the dataset
   void setCurrentArray(const QString& name);
 
 Q_SIGNALS:
-  void currentArrayChanged(vtkAbstractArray*);
+  void currentArrayChanged(vtkDataArray*);
   void currentArrayChanged(const QString& name);
 protected Q_SLOTS:
   void onCurrentIndexChanged(int);

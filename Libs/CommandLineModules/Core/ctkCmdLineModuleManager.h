@@ -106,11 +106,6 @@ public:
   ValidationMode validationMode() const;
 
   /**
-   * @brief Set the validation mode.
-   */
-  void setValidationMode(const ValidationMode& mode);
-
-  /**
    * @brief Registers a new back-end.
    * @param backend The new back-end.
    * @throws ctkInvalidArgumentException if another back-end was already registered handling
@@ -135,16 +130,6 @@ public:
    * reference an un-registered module.
    */
   void unregisterModule(const ctkCmdLineModuleReference& moduleRef);
-
-  /**
-   * @brief Clears the XML/timestamp cache.
-   */
-  void clearCache();
-
-  /**
-   * @brief Reloads all currently valid modules, forcing the cache to be refreshed.
-   */
-  void reloadModules();
 
   /**
    * @brief Returns a ctkCmdLineModuleReference object for the given URL.

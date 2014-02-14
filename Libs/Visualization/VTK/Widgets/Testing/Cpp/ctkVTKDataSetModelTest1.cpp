@@ -35,7 +35,6 @@
 #include <vtkPointData.h>
 #include <vtkPoints.h>
 #include <vtkPolyData.h>
-#include <vtkStringArray.h>
 
 // STD includes
 #include <iostream>
@@ -43,9 +42,9 @@
 namespace
 {
 //-----------------------------------------------------------------------------
-bool checkItems(int line, const QList<vtkAbstractArray*>& expectedAttributeArrays, ctkVTKDataSetModel* dataSetModel)
+bool checkItems(int line, const QList<vtkDataArray*>& expectedAttributeArrays, ctkVTKDataSetModel* dataSetModel)
 {
-  foreach(vtkAbstractArray* expectedDataArray, expectedAttributeArrays)
+  foreach(vtkDataArray* expectedDataArray, expectedAttributeArrays)
     {
 
     QList<QStandardItem*> items = dataSetModel->findItems(expectedDataArray->GetName());
@@ -56,7 +55,7 @@ bool checkItems(int line, const QList<vtkAbstractArray*>& expectedAttributeArray
                    "\tCurrent count: " << items.count() << "\n";
       return false;
       }
-    vtkAbstractArray * currentDataArray = dataSetModel->arrayFromItem(items.at(0));
+    vtkDataArray * currentDataArray = dataSetModel->arrayFromItem(items.at(0));
     if (currentDataArray != expectedDataArray)
       {
       std::cerr << "Line " << line << " - Problem with model - Incorrect array associated with item name:" << expectedDataArray->GetName() << "\n"
@@ -94,17 +93,6 @@ int ctkVTKDataSetModelTest1(int argc, char * argv [] )
     if (added == -1)
       {
       std::cerr << "Line " << __LINE__ << " - Failed to add Floats array";
-      return EXIT_FAILURE;
-      }
-  }
-
-  vtkNew<vtkStringArray> strings;
-  {
-    strings->SetName("Strings");
-    int added = dataSet->GetCellData()->AddArray(strings.GetPointer());
-    if (added == -1)
-      {
-      std::cerr << "Line " << __LINE__ << " - Failed to add Strings array";
       return EXIT_FAILURE;
       }
   }
@@ -196,7 +184,7 @@ int ctkVTKDataSetModelTest1(int argc, char * argv [] )
   ctkVTKDataSetModel dataSetModel;
   dataSetModel.setDataSet(dataSet.GetPointer());
 
-  QList<vtkAbstractArray*> notAttributeArrays;
+  QList<vtkDataArray*> notAttributeArrays;
   notAttributeArrays << ints.GetPointer() << floats.GetPointer();
 
   if (!checkItems(__LINE__, notAttributeArrays, &dataSetModel))
@@ -205,97 +193,97 @@ int ctkVTKDataSetModelTest1(int argc, char * argv [] )
     }
 
   dataSetModel.setAttributeTypes(ctkVTKDataSetModel::ScalarsAttribute);
-  if (!checkItems(__LINE__, QList<vtkAbstractArray*>() << scalars.GetPointer(), &dataSetModel))
+  if (!checkItems(__LINE__, QList<vtkDataArray*>() << scalars.GetPointer(), &dataSetModel))
     {
     return EXIT_FAILURE;
     }
 
   dataSetModel.setAttributeTypes(ctkVTKDataSetModel::NoAttribute | ctkVTKDataSetModel::ScalarsAttribute);
-  if (!checkItems(__LINE__, QList<vtkAbstractArray*>() << notAttributeArrays << scalars.GetPointer(), &dataSetModel))
+  if (!checkItems(__LINE__, QList<vtkDataArray*>() << notAttributeArrays << scalars.GetPointer(), &dataSetModel))
     {
     return EXIT_FAILURE;
     }
 
   dataSetModel.setAttributeTypes(ctkVTKDataSetModel::VectorsAttribute);
-  if (!checkItems(__LINE__, QList<vtkAbstractArray*>() << vectors.GetPointer(), &dataSetModel))
+  if (!checkItems(__LINE__, QList<vtkDataArray*>() << vectors.GetPointer(), &dataSetModel))
     {
     return EXIT_FAILURE;
     }
 
   dataSetModel.setAttributeTypes(ctkVTKDataSetModel::VectorsAttribute);
-  if (!checkItems(__LINE__, QList<vtkAbstractArray*>() << vectors.GetPointer(), &dataSetModel))
+  if (!checkItems(__LINE__, QList<vtkDataArray*>() << vectors.GetPointer(), &dataSetModel))
     {
     return EXIT_FAILURE;
     }
 
   dataSetModel.setAttributeTypes(ctkVTKDataSetModel::NoAttribute | ctkVTKDataSetModel::VectorsAttribute);
-  if (!checkItems(__LINE__, QList<vtkAbstractArray*>() << notAttributeArrays << vectors.GetPointer(), &dataSetModel))
+  if (!checkItems(__LINE__, QList<vtkDataArray*>() << notAttributeArrays << vectors.GetPointer(), &dataSetModel))
     {
     return EXIT_FAILURE;
     }
 
   dataSetModel.setAttributeTypes(ctkVTKDataSetModel::NormalsAttribute);
-  if (!checkItems(__LINE__, QList<vtkAbstractArray*>() << normals.GetPointer(), &dataSetModel))
+  if (!checkItems(__LINE__, QList<vtkDataArray*>() << normals.GetPointer(), &dataSetModel))
     {
     return EXIT_FAILURE;
     }
 
   dataSetModel.setAttributeTypes(ctkVTKDataSetModel::NoAttribute | ctkVTKDataSetModel::NormalsAttribute);
-  if (!checkItems(__LINE__, QList<vtkAbstractArray*>() << notAttributeArrays << normals.GetPointer(), &dataSetModel))
+  if (!checkItems(__LINE__, QList<vtkDataArray*>() << notAttributeArrays << normals.GetPointer(), &dataSetModel))
     {
     return EXIT_FAILURE;
     }
 
   dataSetModel.setAttributeTypes(ctkVTKDataSetModel::TCoordsAttribute);
-  if (!checkItems(__LINE__, QList<vtkAbstractArray*>() << tcoords.GetPointer(), &dataSetModel))
+  if (!checkItems(__LINE__, QList<vtkDataArray*>() << tcoords.GetPointer(), &dataSetModel))
     {
     return EXIT_FAILURE;
     }
 
   dataSetModel.setAttributeTypes(ctkVTKDataSetModel::NoAttribute | ctkVTKDataSetModel::TCoordsAttribute);
-  if (!checkItems(__LINE__, QList<vtkAbstractArray*>() << notAttributeArrays << tcoords.GetPointer(), &dataSetModel))
+  if (!checkItems(__LINE__, QList<vtkDataArray*>() << notAttributeArrays << tcoords.GetPointer(), &dataSetModel))
     {
     return EXIT_FAILURE;
     }
 
   dataSetModel.setAttributeTypes(ctkVTKDataSetModel::TensorsAttribute);
-  if (!checkItems(__LINE__, QList<vtkAbstractArray*>() << tensors.GetPointer(), &dataSetModel))
+  if (!checkItems(__LINE__, QList<vtkDataArray*>() << tensors.GetPointer(), &dataSetModel))
     {
     return EXIT_FAILURE;
     }
 
   dataSetModel.setAttributeTypes(ctkVTKDataSetModel::NoAttribute | ctkVTKDataSetModel::TensorsAttribute);
-  if (!checkItems(__LINE__, QList<vtkAbstractArray*>() << notAttributeArrays << tensors.GetPointer(), &dataSetModel))
+  if (!checkItems(__LINE__, QList<vtkDataArray*>() << notAttributeArrays << tensors.GetPointer(), &dataSetModel))
     {
     return EXIT_FAILURE;
     }
 
   dataSetModel.setAttributeTypes(ctkVTKDataSetModel::GlobalIDsAttribute);
-  if (!checkItems(__LINE__, QList<vtkAbstractArray*>() << globalids.GetPointer(), &dataSetModel))
+  if (!checkItems(__LINE__, QList<vtkDataArray*>() << globalids.GetPointer(), &dataSetModel))
     {
     return EXIT_FAILURE;
     }
 
   dataSetModel.setAttributeTypes(ctkVTKDataSetModel::NoAttribute | ctkVTKDataSetModel::GlobalIDsAttribute);
-  if (!checkItems(__LINE__, QList<vtkAbstractArray*>() << notAttributeArrays << globalids.GetPointer(), &dataSetModel))
+  if (!checkItems(__LINE__, QList<vtkDataArray*>() << notAttributeArrays << globalids.GetPointer(), &dataSetModel))
     {
     return EXIT_FAILURE;
     }
 
   dataSetModel.setAttributeTypes(ctkVTKDataSetModel::PedigreeIDsAttribute);
-  if (!checkItems(__LINE__, QList<vtkAbstractArray*>() << pedigreeids.GetPointer(), &dataSetModel))
+  if (!checkItems(__LINE__, QList<vtkDataArray*>() << pedigreeids.GetPointer(), &dataSetModel))
     {
     return EXIT_FAILURE;
     }
 
   dataSetModel.setAttributeTypes(ctkVTKDataSetModel::NoAttribute | ctkVTKDataSetModel::PedigreeIDsAttribute);
-  if (!checkItems(__LINE__, QList<vtkAbstractArray*>() << notAttributeArrays << pedigreeids.GetPointer(), &dataSetModel))
+  if (!checkItems(__LINE__, QList<vtkDataArray*>() << notAttributeArrays << pedigreeids.GetPointer(), &dataSetModel))
     {
     return EXIT_FAILURE;
     }
 
   dataSetModel.setAttributeTypes(ctkVTKDataSetModel::AllAttribute);
-  if (!checkItems(__LINE__, QList<vtkAbstractArray*>() << notAttributeArrays
+  if (!checkItems(__LINE__, QList<vtkDataArray*>() << notAttributeArrays
                   << scalars.GetPointer() << vectors.GetPointer()
                   << normals.GetPointer() << tcoords.GetPointer()
                   << tensors.GetPointer() << globalids.GetPointer()

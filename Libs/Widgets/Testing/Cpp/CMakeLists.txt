@@ -23,19 +23,14 @@ set(TEST_SOURCES
   ctkConsoleTest1.cpp
   ctkCoordinatesWidgetTest.cpp
   ctkCoordinatesWidgetTest1.cpp
-  ctkCoordinatesWidgetValueProxyTest.cpp
   ctkCrosshairLabelTest1.cpp
   ctkDirectoryButtonTest1.cpp
-  ctkDoubleRangeSliderTest.cpp
   ctkDoubleRangeSliderTest1.cpp
   ctkDoubleRangeSliderTest2.cpp
-  ctkDoubleRangeSliderValueProxyTest.cpp
-  ctkDoubleSliderTest.cpp
   ctkDoubleSliderTest1.cpp
-  ctkDoubleSliderValueProxyTest.cpp
+  ctkDoubleSliderTest2.cpp
   ctkDoubleSpinBoxTest.cpp
   ctkDoubleSpinBoxTest1.cpp
-  ctkDoubleSpinBoxValueProxyTest.cpp
   ctkDynamicSpacerTest1.cpp
   ctkDynamicSpacerTest2.cpp
   ctkErrorLogWidgetTest1.cpp
@@ -66,9 +61,8 @@ set(TEST_SOURCES
   ctkProxyStyleTest1.cpp
   ctkRangeSliderTest.cpp
   ctkRangeSliderTest1.cpp
-  ctkRangeWidgetTest.cpp
   ctkRangeWidgetTest1.cpp
-  ctkRangeWidgetValueProxyTest.cpp
+  ctkRangeWidgetTest2.cpp
   ctkDateRangeWidgetTest1.cpp
   ctkScreenshotDialogTest1.cpp
   ctkSearchBoxTest1.cpp
@@ -81,7 +75,6 @@ set(TEST_SOURCES
   ctkSliderWidgetTest.cpp
   ctkSliderWidgetTest1.cpp
   ctkSliderWidgetTest2.cpp
-  ctkSliderWidgetValueProxyTest.cpp
   ctkThumbnailListWidgetTest1.cpp
   ctkThumbnailLabelTest1.cpp
   ctkToolTipTrapperTest1.cpp
@@ -188,13 +181,7 @@ set(Tests_MOC_CPP)
 QT4_WRAP_CPP(Tests_MOC_CPP ${Tests_MOC_SRCS})
 QT4_GENERATE_MOCS(
   ctkCoordinatesWidgetTest.cpp
-  ctkCoordinatesWidgetValueProxyTest.cpp
-  ctkDoubleRangeSliderTest.cpp
-  ctkDoubleRangeSliderValueProxyTest.cpp
-  ctkDoubleSliderTest.cpp
-  ctkDoubleSliderValueProxyTest.cpp
   ctkDoubleSpinBoxTest.cpp
-  ctkDoubleSpinBoxValueProxyTest.cpp
   ctkFlatProxyModelTest.cpp
   ctkFontButtonTest.cpp
   ctkLanguageComboBoxTest.cpp
@@ -203,11 +190,8 @@ QT4_GENERATE_MOCS(
   ctkPathListWidgetTest.cpp
   ctkPathListWidgetWithButtonsTest.cpp
   ctkRangeSliderTest.cpp
-  ctkRangeWidgetTest.cpp
-  ctkRangeWidgetValueProxyTest.cpp
   ctkSettingsPanelTest.cpp
   ctkSliderWidgetTest.cpp
-  ctkSliderWidgetValueProxyTest.cpp
   )
 set(Tests_UI_CPP)
 if(TEST_UI_FORMS)
@@ -245,20 +229,15 @@ SIMPLE_TEST( ctkCompleterTest1 )
 SIMPLE_TEST( ctkConsoleTest1 )
 SIMPLE_TEST( ctkCoordinatesWidgetTest )
 SIMPLE_TEST( ctkCoordinatesWidgetTest1 )
-SIMPLE_TEST( ctkCoordinatesWidgetValueProxyTest )
 SIMPLE_TEST( ctkCrosshairLabelTest1 )
 SIMPLE_TEST( ctkDateRangeWidgetTest1 )
 SIMPLE_TEST( ctkDirectoryButtonTest1 )
-SIMPLE_TEST( ctkDoubleRangeSliderTest )
 SIMPLE_TEST( ctkDoubleRangeSliderTest1 )
 SIMPLE_TEST( ctkDoubleRangeSliderTest2 )
-SIMPLE_TEST( ctkDoubleRangeSliderValueProxyTest )
-SIMPLE_TEST( ctkDoubleSliderTest )
 SIMPLE_TEST( ctkDoubleSliderTest1 )
-SIMPLE_TEST( ctkDoubleSliderValueProxyTest )
+SIMPLE_TEST( ctkDoubleSliderTest2 )
 SIMPLE_TEST( ctkDoubleSpinBoxTest )
 SIMPLE_TEST( ctkDoubleSpinBoxTest1 )
-SIMPLE_TEST( ctkDoubleSpinBoxValueProxyTest )
 SIMPLE_TEST( ctkDynamicSpacerTest1 )
 SIMPLE_TEST( ctkDynamicSpacerTest2 )
 SIMPLE_TEST( ctkErrorLogWidgetTest1 )
@@ -292,9 +271,9 @@ SIMPLE_TEST( ctkPopupWidgetTest1 )
 SIMPLE_TEST( ctkProxyStyleTest1 )
 SIMPLE_TEST( ctkRangeSliderTest )
 SIMPLE_TEST( ctkRangeSliderTest1 )
-SIMPLE_TEST( ctkRangeWidgetTest )
 SIMPLE_TEST( ctkRangeWidgetTest1 )
-SIMPLE_TEST( ctkRangeWidgetValueProxyTest )
+SIMPLE_TEST( ctkRangeWidgetTest2 )
+SIMPLE_TEST( ctkResizableFrameTest1 )
 SIMPLE_TEST( ctkScreenshotDialogTest1 )
 SIMPLE_TEST( ctkSearchBoxTest1 )
 SIMPLE_TEST( ctkSearchBoxTest2 )
@@ -306,7 +285,6 @@ SIMPLE_TEST( ctkSignalMapperTest1 )
 SIMPLE_TEST( ctkSliderWidgetTest )
 SIMPLE_TEST( ctkSliderWidgetTest1 )
 SIMPLE_TEST( ctkSliderWidgetTest2 )
-SIMPLE_TEST( ctkSliderWidgetValueProxyTest )
 SIMPLE_TEST( ctkThumbnailListWidgetTest1 )
 SIMPLE_TEST( ctkThumbnailLabelTest1 )
 SIMPLE_TEST( ctkToolTipTrapperTest1 )
@@ -320,7 +298,7 @@ SIMPLE_TEST( ctkWorkflowWidgetTest2 )
 # Add Tests expecting CTKData to be set
 #
 if(EXISTS "${CTKData_DIR}")
-  set(baseline_relative_location "Libs/Widgets")
+  set(baseline_relative_location "Libs/Widgets") 
   SIMPLE_TEST_WITH_DATA( ctkCrosshairLabelTest2 ${baseline_relative_location})
 endif()
 

@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>794</width>
+    <width>855</width>
     <height>595</height>
    </rect>
   </property>
@@ -28,7 +28,7 @@
         <property name="enabled">
          <bool>true</bool>
         </property>
-        <property name="backgroundColor">
+        <property name="backgroundColor" stdset="0">
          <color>
           <red>51</red>
           <green>51</green>
@@ -42,13 +42,13 @@
           <blue>51</blue>
          </color>
         </property>
-        <property name="gradientBackground">
+        <property name="gradientBackground" stdset="0">
          <bool>false</bool>
         </property>
-        <property name="orientationWidgetVisible">
+        <property name="orientationWidgetVisible" stdset="0">
          <bool>true</bool>
         </property>
-        <property name="pitchRollYawIncrement">
+        <property name="pitchRollYawIncrement" stdset="0">
          <number>0</number>
         </property>
        </widget>
@@ -87,6 +87,16 @@
        <widget class="ctkFontButton" name="FontButton"/>
       </item>
       <item>
+       <widget class="QPushButton" name="RecordButton">
+        <property name="text">
+         <string>Record</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
        <spacer name="verticalSpacer">
         <property name="orientation">
          <enum>Qt::Vertical</enum>
@@ -100,9 +110,16 @@
        </spacer>
       </item>
       <item>
-       <widget class="QPushButton" name="RecordButton">
+       <widget class="QRadioButton" name="radioButton">
         <property name="text">
-         <string>Record</string>
+         <string>Pause_playback</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="PauseButton">
+        <property name="text">
+         <string>Pause_record</string>
         </property>
         <property name="checkable">
          <bool>true</bool>
@@ -114,9 +131,15 @@
         <property name="text">
          <string>PlayBack</string>
         </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
        </widget>
       </item>
      </layout>
+    </item>
+    <item>
+     <layout class="QVBoxLayout" name="verticalLayout_3"/>
     </item>
    </layout>
   </widget>
@@ -125,8 +148,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>794</width>
-     <height>23</height>
+     <width>855</width>
+     <height>25</height>
     </rect>
    </property>
   </widget>

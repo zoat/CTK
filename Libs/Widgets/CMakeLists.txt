@@ -57,7 +57,6 @@ set(KIT_SRCS
   ctkConsole_p.h
   ctkCoordinatesWidget.cpp
   ctkCoordinatesWidget.h
-  ctkCoordinatesWidget_p.h
   ctkCrosshairLabel.cpp
   ctkCrosshairLabel.h
   ctkDateRangeWidget.cpp
@@ -125,9 +124,6 @@ set(KIT_SRCS
   ctkPopupWidget_p.h
   ctkProxyStyle.cpp
   ctkProxyStyle.h
-  ctkPushButton.cpp
-  ctkPushButton.h
-  ctkPushButton_p.h
   ctkQImageView.cpp
   ctkQImageView.h
   ctkRangeSlider.cpp
@@ -217,7 +213,6 @@ set(KIT_MOC_SRCS
   ctkConsole.h
   ctkConsole_p.h
   ctkCoordinatesWidget.h
-  ctkCoordinatesWidget_p.h
   ctkCrosshairLabel.h
   ctkDateRangeWidget.h
   ctkDirectoryButton.h
@@ -251,7 +246,6 @@ set(KIT_MOC_SRCS
   ctkPopupWidget.h
   ctkPopupWidget_p.h
   ctkProxyStyle.h
-  ctkPushButton.h
   ctkQImageView.h
   ctkRangeSlider.h
   ctkRangeWidget.h

@@ -37,8 +37,6 @@
 #include "ctkXMLEventObserver.h"
 #include "ctkXMLEventSource.h"
 
-
-
 //-----------------------------------------------------------------------------
 ctkQtTestingMainWindow::ctkQtTestingMainWindow()
 {
@@ -46,24 +44,22 @@ ctkQtTestingMainWindow::ctkQtTestingMainWindow()
 
   QObject::connect(Ui.RecordButton, SIGNAL(toggled(bool)), this, SLOT(record(bool)));
   QObject::connect(Ui.PlayBackButton, SIGNAL(clicked()), this, SLOT(play()));
-  QObject::connect(Ui.PauseButton, SIGNAL(toggled(bool)), this, SLOT(pause_playback(bool)));
+  QObject::connect(Ui.PauseButton, SIGNAL(toggled(bool)), this, SLOT(pause(bool)));
 
-  QObject::connect(Ui.RadioButton, SIGNAL(toggled(bool)), this, SLOT(pause_record(bool)));
+  QObject::connect(Ui.radioButton, SIGNAL(toggled(bool)), this, SLOT(pause_record(bool)));
   
    
   QShortcut *shortcuts = new QShortcut(QKeySequence("Ctrl+6"), this);
-  QObject::connect(shortcuts, SIGNAL(activated()), this, SLOT(pop_record()));
+  QObject::connect(shortcuts, SIGNAL(activated()), this, SLOT(popp_record()));
   
   
   QShortcut *shortcut = new QShortcut(QKeySequence("Ctrl+4"), this);
-  QObject::connect(shortcut, SIGNAL(activated()), this, SLOT(pop_play()));
-  
-  QShortcut *shortcutss = new QShortcut(QKeySequence("Ctrl+5"), this);
-  
+  QObject::connect(shortcut, SIGNAL(activated()), this, SLOT(popp_play()));
    
-  this->Recorder = new pqEventRecorder(this);
+  this->Recorder = new pqEventRecorder(this);    
   
-  this->TestUtility = new ctkQtTestingUtility(this);	
+  this->TestUtility = new ctkQtTestingUtility(this);				
+  
   
   this->TestUtility->addEventObserver("xml", new ctkXMLEventObserver(this->TestUtility));
   this->TestUtility->addEventSource("xml", new ctkXMLEventSource(this->TestUtility));
@@ -95,24 +91,28 @@ ctkQtTestingMainWindow::~ctkQtTestingMainWindow()
 {
   if(TestUtility)
     {
-      delete this->TestUtility;
+    delete this->TestUtility;
     }
-  if(Recorder)
+    if(Recorder)
     {
-      delete this->Recorder;
+    delete this->Recorder;
     }
+  
+   
 }
 
 //-----------------------------------------------------------------------------
-void ctkQtTestingMainWindow::pop_record()
+void ctkQtTestingMainWindow::popp_record()
 {
+  qDebug() << "Start Popp";
   this->TestUtility->recordTestsBySuffix(QString("xml"));
 }
 
 //----------------------------------------------------------------------------
-void ctkQtTestingMainWindow::pop_play()
+void ctkQtTestingMainWindow::popp_play()
 {
-  this->TestUtility->openPlayerDialog();
+   this->TestUtility->openPlayerDialog();
+ 
 }
 
 //----------------------------------------------------------------------------
@@ -124,21 +124,24 @@ void ctkQtTestingMainWindow::record(bool start)
                                                      QString(), "XML Files (*.xml)");
     if (!filename.isEmpty())
       {
+      qDebug() << "Start recording";
       QFileInfo fileInfo(filename);
       if (fileInfo.suffix() != "xml")
         {
-          filename += ".xml";
+        filename += ".xml";
         }
-        this->TestUtility->recordTests(filename);
+      this->TestUtility->recordTests(filename);
       }
     }
   else
     {
-      this->TestUtility->stopRecords(1);
+    qDebug() << "Stop recording";
+    this->TestUtility->stopRecords(1);
     }
 }
 
 //-----------------------------------------------------------------------------
+
 void ctkQtTestingMainWindow::play()
 {
   qDebug() << "Start Playback";
@@ -146,16 +149,18 @@ void ctkQtTestingMainWindow::play()
     QString(), "XML Files (*.xml)");
   if (!filename.isEmpty())
     {
-      this->TestUtility->playTests(filename);
+    this->TestUtility->playTests(filename);
     }
   qDebug() << "End Playback";
 }
 
+//-----------------------------------------------------------------------------
 void ctkQtTestingMainWindow::pause_playback(bool start1)
 {
   this->TestUtility->dispatcher()->run(!start1);
 }
 
+//-----------------------------------------------------------------------------
 void ctkQtTestingMainWindow::pause_record(bool start2)
 {
   this->TestUtility->recorder()->pause(!start2);

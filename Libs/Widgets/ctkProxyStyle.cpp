@@ -38,13 +38,11 @@ public:
 private:
   ctkProxyStylePrivate(ctkProxyStyle& object);
   mutable QPointer <QStyle> baseStyle;
-  mutable bool ensureBaseStyleInProgress;
 };
 
 // ----------------------------------------------------------------------------
 ctkProxyStylePrivate::ctkProxyStylePrivate(ctkProxyStyle& object)
   : q_ptr(&object)
-  , ensureBaseStyleInProgress(false)
 {
 }
 
@@ -104,12 +102,6 @@ ctkProxyStyle::~ctkProxyStyle()
 void ctkProxyStyle::ensureBaseStyle() const
 {
   Q_D(const ctkProxyStyle);
-  if (d->ensureBaseStyleInProgress)
-  {
-    // avoid infinite loop
-    return;
-  }
-  d->ensureBaseStyleInProgress = true;  
   d->baseStyle = this->baseStyle();
   // Set the proxy to the entire hierarchy.
   QProxyStyle* proxyStyle = const_cast<QProxyStyle*>(qobject_cast<const QProxyStyle*>(
@@ -123,7 +115,6 @@ void ctkProxyStyle::ensureBaseStyle() const
     baseStyle = proxy ? proxy->baseStyle() : 0;
     }
   d->setBaseStyle(proxyStyle, proxyBaseStyle);
-  d->ensureBaseStyleInProgress = false;
 }
 
 // ----------------------------------------------------------------------------

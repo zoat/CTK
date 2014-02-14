@@ -89,7 +89,6 @@ void screenshot(void* data)
   }
 void screenshotAvailable(void* data)
   {
-  Q_UNUSED(data);
   save = true;
   }
 }

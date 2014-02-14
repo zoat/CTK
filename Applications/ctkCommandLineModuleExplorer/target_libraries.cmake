@@ -7,7 +7,6 @@
 set(target_libraries
   CTKCommandLineModulesFrontendQtGui
   CTKCommandLineModulesFrontendQtWebKit
-  CTKCommandLineModulesBackendXMLChecker
   CTKCommandLineModulesBackendLocalProcess
   CTKCommandLineModulesBackendFunctionPointer
   CTKWidgets

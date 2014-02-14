@@ -21,9 +21,12 @@
 #ifndef __ctkCheckablePushButton_h
 #define __ctkCheckablePushButton_h
 
+// Qt includes
+#include <QPushButton>
+
 // CTK includes
 #include <ctkPimpl.h>
-#include "ctkPushButton.h"
+
 #include "ctkWidgetsExport.h"
 
 class ctkCheckablePushButtonPrivate;
@@ -45,11 +48,10 @@ class ctkCheckablePushButtonPrivate;
 /// setChecked(bool) slot.
 /// \warning The checkbox is drawn in place of the pushbuton icon, any icon
 /// will then be ignored.
-class CTK_WIDGETS_EXPORT ctkCheckablePushButton : public ctkPushButton
+class CTK_WIDGETS_EXPORT ctkCheckablePushButton : public QPushButton
 {
   Q_OBJECT
-  /// This property controls the location of the checkbox with regard to the text.
-  /// Qt::AlignLeft|Qt::AlignVCenter by default
+  Q_PROPERTY(Qt::Alignment buttonTextAlignment READ buttonTextAlignment WRITE setButtonTextAlignment)
   Q_PROPERTY(Qt::Alignment indicatorAlignment READ indicatorAlignment WRITE setIndicatorAlignment)
   Q_PROPERTY(Qt::CheckState checkState READ checkState WRITE setCheckState NOTIFY checkStateChanged)
   Q_PROPERTY(bool checkBoxControlsButton READ checkBoxControlsButton WRITE setCheckBoxControlsButton)
@@ -60,10 +62,20 @@ public:
   ctkCheckablePushButton(const QString& text, QWidget *parent = 0);
   virtual ~ctkCheckablePushButton();
 
+  ///
+  /// Set the alignment of the text on the button,
+  /// Qt::AlignLeft|Qt::AlignVCenter by default.
+  void setButtonTextAlignment(Qt::Alignment textAlignment);
+  Qt::Alignment buttonTextAlignment()const;
+
+  ///
   /// Set the alignment of the indicator (arrow) on the button,
   /// Qt::AlignLeft|Qt::AlignVCenter by default.
   void setIndicatorAlignment(Qt::Alignment indicatorAlignment);
   Qt::Alignment indicatorAlignment()const;
+
+  virtual QSize minimumSizeHint()const;
+  virtual QSize sizeHint()const;
 
   virtual Qt::CheckState checkState()const;
   virtual void setCheckState(Qt::CheckState checkState);
@@ -82,9 +94,15 @@ Q_SIGNALS:
 
 protected:
   /// Reimplemented for internal reasons
+  virtual void paintEvent(QPaintEvent*);
+  /// Reimplemented for internal reasons
   virtual void mousePressEvent(QMouseEvent* event);
   /// Reimplemented for internal reasons
   virtual bool hitButton(const QPoint & pos) const;
+  /// Reimplemented for internal reasons
+  virtual void initStyleOption ( QStyleOptionButton * option ) const;
+protected:
+  QScopedPointer<ctkCheckablePushButtonPrivate> d_ptr;
 
 private:
   Q_DECLARE_PRIVATE(ctkCheckablePushButton);
